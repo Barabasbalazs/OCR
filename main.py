@@ -34,15 +34,15 @@ def get_results(images):
     model = [0] * 10 
     for line in images:
         model[line[64]] += 1
+    return model
 
 
 def knn(training_data, test_data, mode, k):
     # for storing the model accuracies
-    # model = [0] * 10 
-    # training_numbers = get_results(training_data)
-    # test_numbers = get_results(test_data)
+    model = [0] * 10 
     
     # learning error
+    error_counter = 0
     for image in training_data:
         limit = (-1, 100000) if mode == "euclidean" else (-1,-2) 
         # first one is the number second is the similarity
@@ -51,27 +51,48 @@ def knn(training_data, test_data, mode, k):
         for test_image in test_data:
             if mode == "euclidean":
                 diff = euclidean_diff(image[0: 64], test_image[0: 64])
-                if diff < limit[1]:
+                if diff <= limit[1]:
                     if counter >= k:
-                        top_k.remove(limit)
-                        limit = min(top_k, key = lambda x : x[1])
-                        top_k.append((test_image[64],diff))
+                        if k == 1:
+                            top_k[0] = (test_image[64],diff)
+                        else:
+                            top_k.remove(limit)
+                            top_k.append((test_image[64],diff))
+                        limit = max(top_k, key = lambda x : x[1])
                     else:
                         counter += 1
                         limit = (test_image[64],diff)
                         top_k.append(limit)
             else :
                 diff = cos_distance(image[0: 64], test_image[0: 64])
-                if diff > limit[1]:
+                if diff >= limit[1]:
                     if counter >= k:
-                        top_k.remove(limit)
+                        if k == 1:
+                            top_k[0] = (test_image[64],diff)
+                        else:
+                            top_k.remove(limit)
+                            top_k.append((test_image[64],diff))
                         limit = min(top_k, key = lambda x : x[1])
-                        top_k.append((test_image[64],diff))
                     else:
                         counter += 1
                         limit = (test_image[64],diff)
                         top_k.append(limit)
-        print(top_k)
+        result = get_most_common(top_k)
+        # print(top_k)
+        # print("result is {} and actually its {}".format(result, image[64]))
+        if result == image[64]:
+            error_counter += 1
+            model[result] += 1
+
+    return error_counter / len(training_data), model
+
+        
+
+def get_most_common(list):
+    indexes = [0] * 10
+    for i in list:
+        indexes[i[0]] += 1
+    return indexes.index(max(indexes))
 
             
             
@@ -79,4 +100,9 @@ def knn(training_data, test_data, mode, k):
 if __name__ == "__main__":
     training_data = read_input("optdigits.tra")
     test_data = read_input("optdigits.tes")
-    knn(training_data, test_data, "euclide", 5)
+    training_numbers = get_results(training_data)
+    test_numbers = get_results(test_data)
+    training_error, model = knn(training_data, test_data, "euclidean", 1)
+    print(training_error)
+    for i in range(10):
+        print(i, " - ", model[i] / training_numbers[i])
