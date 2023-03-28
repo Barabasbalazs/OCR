@@ -97,6 +97,22 @@ def get_most_common(list):
     return indexes.index(max(indexes))
 
 
+def centroid(training_data, comparison_data):
+    # model_arrays = [[0] * 64] * 10
+    rows, cols = (10, 64)
+    model_arrays = [[0 for i in range(cols)] for j in range(rows)]
+    for training_image in training_data:
+        current_number = training_image[64]
+        for i in range(64):
+            coordinate = training_image[i]
+            # adds the same number to all of the indexes
+            model_arrays[current_number][i] += coordinate
+    for i in range(10):
+        for j in range(64):
+            model_arrays[i][j] /= comparison_data[i]
+    return model_arrays
+
+
 def write_results(training_error, training_numbers, training_euclidean, training_cos, 
                   test_error, test_numbers, test_euclidean, test_cos, k):
     file = open("output.txt","w")
@@ -107,6 +123,7 @@ def write_results(training_error, training_numbers, training_euclidean, training
     file.write("Training error on models using euclidean\n")
     for i in range(10):
         file.write("{} - {}\n".format(i, training_euclidean[i] / training_numbers[i]))
+    file.write("Training error on cos: {}\n".format(training_error[1]))
     file.write("Training error on models using cos\n")
     for i in range(10):
         file.write("{} - {}\n".format(i, training_cos[i] / training_numbers[i]))
@@ -116,6 +133,7 @@ def write_results(training_error, training_numbers, training_euclidean, training
     file.write("Test error on models using euclidean\n")
     for i in range(10):
         file.write("{} - {}\n".format(i, test_euclidean[i] / test_numbers[i]))
+    file.write("Training error on cos: {}\n".format(test_error[1]))
     file.write("Test error on models using cos\n")
     for i in range(10):
         file.write("{} - {}\n".format(i, test_cos[i] / test_numbers[i]))
@@ -141,16 +159,19 @@ def visualize_number(data_of_image):
 if __name__ == "__main__":
     training_data = read_input("optdigits.tra")
     test_data = read_input("optdigits.tes")
-    visualize_number(training_data[3])
-    # training_numbers = get_results(training_data)
-    # test_numbers = get_results(test_data)
+    # visualize_number(training_data[3])
+    training_numbers = get_results(training_data)
+    test_numbers = get_results(test_data)
+    perfect_models = centroid(training_data, training_numbers)
+    visualize_number(perfect_models[2])
+    # print(perfect_models)
     # training_error = [0, 0]
     # test_error = [0, 0]
     # k = 1
-    # training_error[0], training_euclidean = knn(training_data, test_data, "euclidean", k)
-    # training_error[1], training_cos = knn(training_data, test_data, "euc", k)
-    # test_error[0], test_euclidean = knn(test_data, test_data, "euclidean", k)
-    # test_error[1], test_cos = knn(test_data, test_data, "euc", k)
+    # training_error[0], training_euclidean = knn(training_data, training_data, "euclidean", k)
+    # training_error[1], training_cos = knn(training_data, training_data, "euc", k)
+    # test_error[0], test_euclidean = knn(training_data, test_data, "euclidean", k)
+    # test_error[1], test_cos = knn(training_data, test_data, "euc", k)
     # write_results(training_error, training_numbers, training_euclidean, training_cos,
-    #               test_error, test_numbers, test_euclidean, test_cos, k)
+    #            test_error, test_numbers, test_euclidean, test_cos, k)
     
