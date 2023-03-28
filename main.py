@@ -1,4 +1,6 @@
 import math
+import matplotlib.pyplot as plt
+import numpy as np
 
 # this needs to be as low as possible
 def euclidean_diff(x, y):
@@ -94,15 +96,61 @@ def get_most_common(list):
         indexes[i[0]] += 1
     return indexes.index(max(indexes))
 
-            
-            
+
+def write_results(training_error, training_numbers, training_euclidean, training_cos, 
+                  test_error, test_numbers, test_euclidean, test_cos, k):
+    file = open("output.txt","w")
+
+    file.write("K is = {}\n".format(k))
+
+    file.write("Training error on euclidean: {}\n".format(training_error[0]))
+    file.write("Training error on models using euclidean\n")
+    for i in range(10):
+        file.write("{} - {}\n".format(i, training_euclidean[i] / training_numbers[i]))
+    file.write("Training error on models using cos\n")
+    for i in range(10):
+        file.write("{} - {}\n".format(i, training_cos[i] / training_numbers[i]))
+
+
+    file.write("Test error on euclidean: {}\n".format(test_error[0]))
+    file.write("Test error on models using euclidean\n")
+    for i in range(10):
+        file.write("{} - {}\n".format(i, test_euclidean[i] / test_numbers[i]))
+    file.write("Test error on models using cos\n")
+    for i in range(10):
+        file.write("{} - {}\n".format(i, test_cos[i] / test_numbers[i]))
+    
+    file.close()            
+
+
+def visualize_number(data_of_image):
+    number_matrix = []
+    it = 0
+    for i in range(8):
+        number_matrix.append([])
+        for j in range(8):
+            number_matrix[i].append(data_of_image[it])
+            it += 1
+
+    np_number = np.array(number_matrix)
+
+    plt.imshow(np_number)
+    plt.show()
+
 
 if __name__ == "__main__":
     training_data = read_input("optdigits.tra")
     test_data = read_input("optdigits.tes")
-    training_numbers = get_results(training_data)
-    test_numbers = get_results(test_data)
-    training_error, model = knn(training_data, test_data, "euclidean", 1)
-    print(training_error)
-    for i in range(10):
-        print(i, " - ", model[i] / training_numbers[i])
+    visualize_number(training_data[3])
+    # training_numbers = get_results(training_data)
+    # test_numbers = get_results(test_data)
+    # training_error = [0, 0]
+    # test_error = [0, 0]
+    # k = 1
+    # training_error[0], training_euclidean = knn(training_data, test_data, "euclidean", k)
+    # training_error[1], training_cos = knn(training_data, test_data, "euc", k)
+    # test_error[0], test_euclidean = knn(test_data, test_data, "euclidean", k)
+    # test_error[1], test_cos = knn(test_data, test_data, "euc", k)
+    # write_results(training_error, training_numbers, training_euclidean, training_cos,
+    #               test_error, test_numbers, test_euclidean, test_cos, k)
+    
