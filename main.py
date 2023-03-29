@@ -86,6 +86,8 @@ def knn(training_data, test_data, mode, k):
             error_counter += 1
             model[result] += 1
 
+    #the calculations are right, but the returned model is not
+
     return error_counter / len(training_data), model
 
         
@@ -133,7 +135,7 @@ def write_results(training_error, training_numbers, training_euclidean, training
     file.write("Test error on models using euclidean\n")
     for i in range(10):
         file.write("{} - {}\n".format(i, test_euclidean[i] / test_numbers[i]))
-    file.write("Training error on cos: {}\n".format(test_error[1]))
+    file.write("Test error on cos: {}\n".format(test_error[1]))
     file.write("Test error on models using cos\n")
     for i in range(10):
         file.write("{} - {}\n".format(i, test_cos[i] / test_numbers[i]))
@@ -162,16 +164,15 @@ if __name__ == "__main__":
     # visualize_number(training_data[3])
     training_numbers = get_results(training_data)
     test_numbers = get_results(test_data)
-    perfect_models = centroid(training_data, training_numbers)
-    visualize_number(perfect_models[2])
+    # perfect_models = centroid(training_data, training_numbers)
     # print(perfect_models)
-    # training_error = [0, 0]
-    # test_error = [0, 0]
-    # k = 1
-    # training_error[0], training_euclidean = knn(training_data, training_data, "euclidean", k)
-    # training_error[1], training_cos = knn(training_data, training_data, "euc", k)
-    # test_error[0], test_euclidean = knn(training_data, test_data, "euclidean", k)
-    # test_error[1], test_cos = knn(training_data, test_data, "euc", k)
-    # write_results(training_error, training_numbers, training_euclidean, training_cos,
-    #            test_error, test_numbers, test_euclidean, test_cos, k)
+    training_error = [0, 0]
+    test_error = [0, 0]
+    k = 5
+    training_error[0], training_euclidean = knn(training_data, training_data, "euclidean", k)
+    training_error[1], training_cos = knn(training_data, training_data, "euc", k)
+    test_error[0], test_euclidean = knn(test_data, training_data, "euclidean", k)
+    test_error[1], test_cos = knn(test_data, training_data, "euc", k)
+    write_results(training_error, training_numbers, training_euclidean, training_cos,
+                test_error, test_numbers, test_euclidean, test_cos, k)
     
