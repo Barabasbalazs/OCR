@@ -1,4 +1,4 @@
-#import numpy as np
+import os
 from utils.calculations import euclidean_diff, cos_distance, get_most_common
 from utils.io import read_input, write_results
 from utils.plotting import visualize_number, centroid_visualization
@@ -125,8 +125,15 @@ def centroid_main_function(training_data, training_numbers, test_data, test_numb
 if __name__ == "__main__":
     training_data = read_input("input/optdigits.tra")
     test_data = read_input("input/optdigits.tes")
+
     training_numbers = get_values(training_data)
     test_numbers = get_values(test_data)
+
+    if not os.path.exists("plots"):
+        os.makedirs("plots")
     centroid_visualization(test_data)
+
+    if not os.path.exists("output"):
+         os.makedirs("output")
     knn_main_function(training_data, training_numbers, test_data, test_numbers, 2)
     centroid_main_function(training_data, training_numbers, test_data, test_numbers)
